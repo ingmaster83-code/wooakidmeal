@@ -1,0 +1,36 @@
+title: 우아급식카드 - 전국 아동급식카드 가맹점 찾기
+description: >-
+  전국 310,244곳의 아동급식카드(꿈나무카드·행복카드 등) 가맹점을 지역별로 검색하세요.
+  시군구 목록 + 이름 검색으로 원하는 가맹점을 찾을 수 있습니다.
+url: "https://wooakidmeal.wooahouse.com"
+baseurl: ""
+lang: ko
+timezone: Asia/Seoul
+author: WooaHouse
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - scripts/
+  - "*.py"
+  - "*.log"
+  - "*.txt"
+  - README.md
+  - .gitignore
+  - vendor/
+  - _rawdata/
+  - docs/
+
+# 설계 변경 메모: 원래 개별 가맹점(31만개) 페이지를 만들었으나 GitHub Pages(1GB)와
+# Cloudflare Pages(2만 파일) 양쪽 다 규모 제한에 걸려서, 개별 페이지를 포기하고
+# 시도/시군구 페이지(약 180개)까지만 정적생성 + 개별 매장은 클라이언트 검색(Fuse.js)으로
+# 전환함(2026-09-01). 이후로는 규모가 작아져 표준 GitHub Actions 빌드로 복귀.
