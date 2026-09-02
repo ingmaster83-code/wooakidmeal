@@ -1,0 +1,58 @@
+---
+layout: default
+---
+
+<div class="page-with-sidebar">
+<div class="region-page">
+
+  <nav class="breadcrumb" aria-label="위치">
+    <a href="/">홈</a>
+    <span>›</span>
+    <a href="/region/{{ page.doShort | uri_escape }}/">{{ page.doShort }}</a>
+    <span>›</span>
+    <a href="/region/{{ page.doShort | uri_escape }}/{{ page.sigungu | uri_escape }}/">{{ page.sigungu }}</a>
+    <span>›</span>
+    <span>{% if page.dong == "기타" %}기타 지역{% else %}{{ page.dong }}{% endif %}</span>
+  </nav>
+
+  <div class="region-page-header">
+    <h1>🍱 {{ page.doShort }} {{ page.sigungu }} {% if page.dong == "기타" %}기타 지역{% else %}{{ page.dong }}{% endif %} 아동급식카드 가맹점</h1>
+    <p>총 {{ page.totalCount }}곳</p>
+  </div>
+
+  <!-- 광고 -->
+  <div class="ad-slot">
+    {% include ad.html %}
+  </div>
+
+  {% if page.truncated %}
+  <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:.87rem;color:#9A3412;">
+    가맹점이 많아 상위 {{ page.items.size }}곳만 표시합니다. 원하는 매장을 못 찾으셨나요? <a href="/search/?q={{ page.sigungu | uri_escape }}" style="color:#EA580C;font-weight:700;">검색으로 찾아보기 →</a>
+  </div>
+  {% endif %}
+
+  <div class="camp-grid">
+    {% for s in page.items %}
+    <div class="camp-card">
+      <div class="camp-card-img-placeholder">🍱</div>
+      <div class="camp-card-body">
+        <div class="camp-card-name">{{ s.storeName }}</div>
+        <div class="camp-card-loc">📍 {{ s.addr }}</div>
+        {% if s.tel and s.tel != "" %}<div class="camp-card-loc">📞 <a href="tel:{{ s.tel }}">{{ s.tel }}</a></div>{% endif %}
+        {% if s.dlvrOpen and s.dlvrOpen != "" %}<div class="camp-card-tags"><span class="tag tag-type">🛵 배달</span></div>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div style="margin-top:40px;background:#F9FAFB;border-radius:14px;padding:24px 28px;">
+    <h2 style="font-size:1.05rem;font-weight:700;margin-bottom:12px;">아동급식카드란?</h2>
+    <p style="color:#374151;line-height:1.8;font-size:.9375rem;">
+      아동급식카드는 결식 우려가 있는 아동에게 지자체가 지원하는 급식비를 결제할 수 있도록 발급하는 카드입니다.
+      지역마다 꿈나무카드·행복카드·위드카드 등 명칭이 다르며, 편의점·분식점·마트·배달 등 다양한 가맹점에서 사용할 수 있습니다.
+    </p>
+  </div>
+
+</div>
+<aside class="tool-sidebar"></aside>
+</div>

@@ -8,7 +8,7 @@
   <meta name="naver-site-verification" content="9707f0f54636903bc1b7205f0695ef2c62e79dd9" />
   <link rel="canonical" href="{{ page.url | absolute_url }}">
 
-  {% if page.layout == 'store' %}
+  {% if page.layout == 'dong' or page.layout == 'sigungu' or page.layout == 'do' %}
   <meta property="og:type" content="article">
   <meta property="og:title" content="{{ page.title }} | 우아급식카드">
   <meta property="og:description" content="{{ page.description }}">
@@ -52,7 +52,7 @@
 <script src="{{ '/assets/js/wooa-sites-bar.js' | relative_url }}"></script>
 <script src="{{ '/assets/js/ad-dev-placeholder.js' | relative_url }}"></script>
 
-{% unless page.layout == 'store' or page.layout == 'sigungu' or page.layout == 'do' or page.url == '/' %}
+{% unless page.layout == 'dong' or page.layout == 'sigungu' or page.layout == 'do' or page.url == '/' %}
 <div class="top-ad-bar">
   {% include ad.html %}
 </div>

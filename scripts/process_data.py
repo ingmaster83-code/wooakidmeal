@@ -39,6 +39,26 @@ def make_slug(name: str, code: str, addr: str) -> str:
     return f"{slug}-{h}" if slug else h
 
 
+# 동/읍/면 추출 — 지번주소(LNMADR) 우선(있으면 항상 시군구 바로 다음 토큰), 없으면
+# 도로명주소(RDNMADR)에서 "시/군/구" 다음 토큰 또는 괄호 안 법정동 표기를 시도.
+# "OO동1가/2가"(옛 법정동 세분화 표기)도 포함. 둘 다 실패하면 dong=""(시군구 페이지의
+# "기타" 버킷으로 귀속). wooapay에서 검증된 패턴 재사용(전체 66.6% 추출 성공).
+_DONG_RE1 = re.compile(r"(?:시|군|구)\s+([가-힣0-9]+동(?:\d+가)?|[가-힣0-9]+(?:읍|면))(?:\s|\(|$)")
+_DONG_RE2 = re.compile(r"\(([가-힣0-9]+동(?:\d+가)?)[,)]")
+
+
+def extract_dong(addr: str):
+    if not addr:
+        return None
+    m = _DONG_RE1.search(addr)
+    if m:
+        return m.group(1)
+    m2 = _DONG_RE2.search(addr)
+    if m2:
+        return m2.group(1)
+    return None
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=None, help="로컬 미리보기용: 앞에서 N개만 처리")
@@ -67,6 +87,10 @@ def main():
             skipped += 1
             continue
 
+        lnmadr = (d.get("LNMADR") or "").strip()
+        rdnmadr_raw = (d.get("RDNMADR") or "").strip()
+        dong = extract_dong(lnmadr) or extract_dong(rdnmadr_raw) or "기타"
+
         code = (d.get("MRHST_CODE") or "").strip()
         slug = make_slug(store_name, code, addr)
         seen_slugs[slug] += 1
@@ -78,6 +102,7 @@ def main():
             "doShort": do_short,
             "doFull": do_full,
             "sigungu": sigungu,
+            "dong": dong,
             "addr": addr,
             "lat": (d.get("LATITUDE") or "").strip(),
             "lng": (d.get("LONGITUDE") or "").strip(),
@@ -121,9 +146,16 @@ def main():
     for (do, sg), cnt in sigungu_counts.most_common(5):
         print(f"  {do} {sg}: {cnt}개")
 
+    dong_counts = Counter((i["doShort"], i["sigungu"], i["dong"]) for i in items)
+    no_dong = sum(1 for i in items if i["dong"] == "기타")
+    print(f"\n동/읍/면 조합 수: {len(dong_counts)}개 (동 추출 실패 → '기타' 처리: {no_dong}개, {no_dong/len(items)*100:.1f}%)")
+    print("최다 동 top5:")
+    for (do, sg, dg), cnt in dong_counts.most_common(5):
+        print(f"  {do} {sg} {dg}: {cnt}개")
+
     # 검색 인덱스 (짧은 키로 용량 최소화)
     index = [
-        {"n": i["storeName"], "s": i["slug"], "do": i["doShort"], "sg": i["sigungu"]}
+        {"n": i["storeName"], "s": i["slug"], "do": i["doShort"], "sg": i["sigungu"], "dg": i["dong"]}
         for i in items
     ]
     SEARCH_INDEX_OUT.write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
