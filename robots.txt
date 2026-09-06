@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://wooasenior.wooahouse.com/sitemap.xml
+Sitemap: https://wooakidmeal.wooahouse.com/sitemap.xml
